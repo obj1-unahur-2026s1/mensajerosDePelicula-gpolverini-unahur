@@ -19,4 +19,4 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Guías de contribución y código de conducta
 - Configuración del proyecto para Wollok con estructura estándar
 
-[1.0.0]: https://github.com/obj1-unahur-2026s1/mensajeros-de-pelicula/releases/tag/v1.0.0
+[1.0.0]: https://github.com/obj1-unahur-2026s1/mensajerosDePelicula-gpolverini-unahur/releases/tag/v1.0.0
