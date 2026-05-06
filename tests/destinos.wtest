@@ -1,0 +1,64 @@
+import src.mensajeros.*
+import src.destinos.*
+import src.vehiculos.*
+
+describe "Puentedebrooklyn | Verificar restricción de peso con mensajero liviano" {
+    test "Given: Roberto en bicicleta (95kg) | When: consultamos dejaPasarA(roberto) | Then: debería retornar true" {
+        roberto.vehiculo(bicicleta)
+        assert.that(puentedebrooklyn.dejaPasarA(roberto))
+    }
+}
+
+describe "Puentedebrooklyn | Verificar restricción de peso en el límite" {
+    test "Given: Roberto en camión con 1 acoplado (590kg) | When: consultamos dejaPasarA(roberto) | Then: debería retornar true" {
+        roberto.vehiculo(camion)
+        camion.cantidadDeAcoplados(1)
+        assert.that(puentedebrooklyn.dejaPasarA(roberto))
+    }
+}
+
+describe "Puentedebrooklyn | Verificar restricción de peso excedido" {
+    test "Given: Roberto en camión con 2 acoplados (1090kg) | When: consultamos dejaPasarA(roberto) | Then: debería retornar false" {
+        roberto.vehiculo(camion)
+        camion.cantidadDeAcoplados(2)
+        assert.notThat(puentedebrooklyn.dejaPasarA(roberto))
+    }
+}
+
+describe "Puentedebrooklyn | Verificar que Neo puede pasar" {
+    test "Given: Neo (0kg) | When: consultamos dejaPasarA(neo) | Then: debería retornar true" {
+        assert.that(puentedebrooklyn.dejaPasarA(neo))
+    }
+}
+
+describe "Puentedebrooklyn | Verificar que Chuck puede pasar" {
+    test "Given: Chuck Norris (80kg) | When: consultamos dejaPasarA(chucknorris) | Then: debería retornar true" {
+        assert.that(puentedebrooklyn.dejaPasarA(chucknorris))
+    }
+}
+
+describe "Lamatrix | Verificar que Chuck puede entrar" {
+    test "Given: Chuck Norris puede llamar | When: consultamos dejaPasarA(chucknorris) | Then: debería retornar true" {
+        assert.that(lamatrix.dejaPasarA(chucknorris))
+    }
+}
+
+describe "Lamatrix | Verificar que Neo con crédito puede entrar" {
+    test "Given: Neo con crédito | When: consultamos dejaPasarA(neo) | Then: debería retornar true" {
+        neo.cargarCredito()  
+        assert.that(lamatrix.dejaPasarA(neo))
+    }
+}
+
+describe "Lamatrix | Verificar que Neo sin crédito no puede entrar" {
+    test "Given: Neo sin crédito | When: consultamos dejaPasarA(neo) | Then: debería retornar false" {
+        neo.agotarCredito() 
+        assert.notThat(lamatrix.dejaPasarA(neo))
+    }
+}
+
+describe "Lamatrix | Verificar que Roberto no puede entrar" {
+    test "Given: Roberto no puede llamar | When: consultamos dejaPasarA(roberto) | Then: debería retornar false" {
+        assert.notThat(lamatrix.dejaPasarA(roberto))
+    }
+}

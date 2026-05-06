@@ -1,0 +1,229 @@
+import src.mensajeros.*
+import src.destinos.*
+import src.paquetes.*
+import src.vehiculos.*
+import src.empresa.*
+
+describe "EmpresaDeMensajeria | Verificar contratación de mensajero" {
+    test "Given: Empresa vacía | When: contratamos a Roberto | Then: cantidadDeMensajeros() debería retornar 1" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.contratar(roberto)
+        assert.equals(1, empresaDeMensajeria.cantidadDeMensajeros())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar despido de mensajero" {
+    test "Given: Empresa con Roberto y Chuck | When: despedimos a Roberto | Then: cantidadDeMensajeros() debería retornar 1 y no contener a Roberto" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.contratar(roberto)
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.despedir(roberto)
+        assert.that(empresaDeMensajeria.cantidadDeMensajeros() == 1 && !empresaDeMensajeria.mensajeros().contains(roberto))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar despido masivo" {
+    test "Given: Empresa con 3 mensajeros | When: ejecutamos despedirATodos() | Then: cantidadDeMensajeros() debería retornar 0" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.contratar(roberto)
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.contratar(neo)
+        empresaDeMensajeria.despedirATodos()
+        assert.equals(0, empresaDeMensajeria.cantidadDeMensajeros())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar si es grande con 2 mensajeros" {
+    test "Given: Empresa con 2 mensajeros | When: consultamos esGrande() | Then: debería retornar false" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.contratar(roberto)
+        empresaDeMensajeria.contratar(chucknorris)    
+        assert.notThat(empresaDeMensajeria.esGrande())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar si es grande con 3 mensajeros" {
+    test "Given: Empresa con 3 mensajeros | When: consultamos esGrande() | Then: debería retornar true" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.contratar(roberto)
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.contratar(neo)  
+        assert.that(empresaDeMensajeria.esGrande())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar entrega por primer empleado" {
+    test "Given: Chuck es el primer empleado y paquete pago a la Matrix | When: consultamos elPrimerEmpleadoPuedeEntregar(paquete) | Then: debería retornar true" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.contratar(roberto)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        assert.that(empresaDeMensajeria.elPrimerEmpleadoPuedeEntregar(paquete))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar peso del último mensajero" {
+    test "Given: Roberto en bicicleta es el último empleado | When: consultamos pesoDelUltimoMensajero() | Then: debería retornar 95" {
+        empresaDeMensajeria.despedirATodos()
+        roberto.vehiculo(bicicleta)
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.contratar(roberto)
+        assert.equals(95, empresaDeMensajeria.pesoDelUltimoMensajero())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar restricción de entrega por primer empleado" {
+    test "Given: Roberto es el primer empleado y paquete pago a la Matrix | When: consultamos elPrimerEmpleadoPuedeEntregar(paquete) | Then: debería retornar false" {
+        empresaDeMensajeria.despedirATodos()
+        roberto.vehiculo(bicicleta)
+        empresaDeMensajeria.contratar(roberto)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        assert.notThat(empresaDeMensajeria.elPrimerEmpleadoPuedeEntregar(paquete))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar si puede entregar un paquete" {
+    test "Given: Empresa con Chuck y Roberto, paquete pago a la Matrix | When: consultamos puedeEntregar(paquete) | Then: debería retornar true" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.contratar(roberto)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        assert.that(empresaDeMensajeria.puedeEntregar(paquete))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar mensajeros que pueden llevar un paquete" {
+    test "Given: Empresa con Chuck, Neo con crédito y Roberto, paquete pago a la Matrix | When: consultamos mensajerosQuePuedenLlevar(paquete) | Then: debería retornar lista con Chuck y Neo" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        neo.cargarCredito()
+        empresaDeMensajeria.contratar(neo)
+        roberto.vehiculo(bicicleta)
+        empresaDeMensajeria.contratar(roberto)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        const mensajeros = empresaDeMensajeria.mensajerosQuePuedenLlevar(paquete)
+        assert.that(mensajeros.size() == 2 && mensajeros.contains(chucknorris) && mensajeros.contains(neo))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar sobrepeso con promedio bajo" {
+    test "Given: Empresa con Chuck (80kg), Neo (0kg) y Roberto en bici (95kg) | When: consultamos tieneSobrepeso() | Then: debería retornar false" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.contratar(neo)
+        roberto.vehiculo(bicicleta)
+        empresaDeMensajeria.contratar(roberto)
+        assert.notThat(empresaDeMensajeria.tieneSobrepeso())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar sobrepeso con promedio alto" {
+    test "Given: Empresa con Roberto en camión con 2 acoplados (1090kg) | When: consultamos tieneSobrepeso() | Then: debería retornar true" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        roberto.vehiculo(camion)
+        camion.cantidadDeAcoplados(2)
+        empresaDeMensajeria.contratar(roberto)
+        assert.that(empresaDeMensajeria.tieneSobrepeso())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar envío exitoso de paquete" {
+    test "Given: Empresa con Chuck, paquete pago a la Matrix | When: ejecutamos enviar(paquete) | Then: paquete debería estar en paquetesEnviados" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        empresaDeMensajeria.enviar(paquete)
+        assert.that(empresaDeMensajeria.paquetesEnviados().contains(paquete))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar paquete pendiente cuando no se puede enviar" {
+    test "Given: Empresa con Roberto, paquete pago a la Matrix | When: ejecutamos enviar(paquete) | Then: paquete debería estar en paquetesPendientes" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        roberto.vehiculo(bicicleta)
+        empresaDeMensajeria.contratar(roberto)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        empresaDeMensajeria.enviar(paquete) 
+        assert.that(empresaDeMensajeria.paquetesPendientes().contains(paquete))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar facturación con paquetes enviados" {
+    test "Given: Empresa con Chuck, paquete ($50) y paquetito ($0) enviados | When: consultamos facturacion() | Then: debería retornar 50" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        empresaDeMensajeria.enviar(paquete)
+        empresaDeMensajeria.enviar(paquetito)
+        assert.equals(50, empresaDeMensajeria.facturacion())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar envío de múltiples paquetes" {
+    test "Given: Empresa con Chuck, lista con paquete y paquetito | When: ejecutamos enviarTodos(lista) | Then: ambos deberían estar en paquetesEnviados" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        const paquetes = [paquete, paquetito]
+        empresaDeMensajeria.enviarTodos(paquetes)
+        assert.equals(2, empresaDeMensajeria.paquetesEnviados().size())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar envío de paquete pendiente más caro" {
+    test "Given: Empresa con Chuck, paquetonviajero con 2 destinos ($200) pendiente | When: ejecutamos enviarPaquetePendienteMasCaro() y Chuck puede llevarlo | Then: debería estar en paquetesEnviados" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        empresaDeMensajeria.contratar(chucknorris)
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.agregarDestino(puentedebrooklyn)
+        paquetonviajero.registrarPago(200)
+        empresaDeMensajeria.enviar(paquetonviajero)
+        empresaDeMensajeria.enviarPaquetePendienteMasCaro()
+        assert.that(empresaDeMensajeria.paquetesEnviados().contains(paquetonviajero))
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar método limpiarPaquetes" {
+    test "Given: Empresa con paquetes enviados y pendientes | When: ejecutamos limpiarPaquetes() | Then: ambas listas deberían estar vacías" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        empresaDeMensajeria.enviar(paquete)
+        empresaDeMensajeria.enviar(paquetito)
+        empresaDeMensajeria.limpiarPaquetes()
+        
+        assert.that(empresaDeMensajeria.paquetesEnviados().isEmpty() && empresaDeMensajeria.paquetesPendientes().isEmpty())
+    }
+}
+
+describe "EmpresaDeMensajeria | Verificar enviarPaquetePendienteMasCaro con lista vacía" {
+    test "Given: Empresa sin paquetes pendientes | When: ejecutamos enviarPaquetePendienteMasCaro() | Then: no debería generar error" {
+        empresaDeMensajeria.despedirATodos()
+        empresaDeMensajeria.limpiarPaquetes()
+        empresaDeMensajeria.contratar(chucknorris)
+        empresaDeMensajeria.enviarPaquetePendienteMasCaro()
+        
+        assert.that(empresaDeMensajeria.paquetesPendientes().isEmpty())
+    }
+}

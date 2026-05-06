@@ -1,0 +1,214 @@
+import src.mensajeros.*
+import src.destinos.*
+import src.paquetes.*
+import src.vehiculos.*
+
+describe "Paquete | Verificar entrega con Roberto en camión" {
+    test "Given: Roberto (90kg) en camión con 1 acoplado y paquete pago al puente | When: verificamos puedeSerEntregadoPor(roberto) | Then: debería retornar true" {
+        roberto.vehiculo(camion)
+        camion.cantidadDeAcoplados(1)
+        paquete.destino(puentedebrooklyn)
+        paquete.registrarPago()
+        assert.that(paquete.puedeSerEntregadoPor(roberto))
+    }
+}
+
+describe "Paquete | Verificar entrega con Neo sin pago" {
+    test "Given: Neo con crédito y paquete sin pagar a la Matrix | When: verificamos puedeSerEntregadoPor(neo) | Then: debería retornar false" {
+        neo.cargarCredito()
+        paquete.destino(lamatrix)
+        paquete.rechazarPago() 
+        assert.notThat(paquete.puedeSerEntregadoPor(neo))
+    }
+}
+
+describe "Paquete | Verificar entrega con Roberto en bicicleta" {
+    test "Given: Roberto en bicicleta y paquete pago al puente | When: verificamos puedeSerEntregadoPor(roberto) | Then: debería retornar true" {
+        roberto.vehiculo(bicicleta)
+        paquete.destino(puentedebrooklyn)
+        paquete.registrarPago()
+        assert.that(paquete.puedeSerEntregadoPor(roberto))
+    }
+}
+
+describe "Paquete | Verificar restricción de peso en puente" {
+    test "Given: Roberto en camión con 2 acoplados y paquete pago al puente | When: verificamos puedeSerEntregadoPor(roberto) | Then: debería retornar false" {
+        roberto.vehiculo(camion)
+        camion.cantidadDeAcoplados(2)
+        paquete.destino(puentedebrooklyn)
+        paquete.registrarPago()
+        assert.notThat(paquete.puedeSerEntregadoPor(roberto))
+    }
+}
+
+describe "Paquete | Verificar entrega con Chuck Norris a la Matrix" {
+    test "Given: Chuck Norris y paquete pago a la Matrix | When: verificamos puedeSerEntregadoPor(chucknorris) | Then: debería retornar true" {
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        assert.that(paquete.puedeSerEntregadoPor(chucknorris))
+    }
+}
+
+describe "Paquete | Verificar restricción de llamada en Matrix" {
+    test "Given: Roberto y paquete pago a la Matrix | When: verificamos puedeSerEntregadoPor(roberto) | Then: debería retornar false" {
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        assert.notThat(paquete.puedeSerEntregadoPor(roberto))
+    }
+}
+
+describe "Paquete | Verificar entrega con Neo con crédito" {
+    test "Given: Neo con crédito y paquete pago a la Matrix | When: verificamos puedeSerEntregadoPor(neo) | Then: debería retornar true" {
+        neo.cargarCredito()
+        paquete.destino(lamatrix)
+        paquete.registrarPago() 
+        assert.that(paquete.puedeSerEntregadoPor(neo))
+    }
+}
+
+describe "Paquete | Verificar restricción de crédito de Neo" {
+    test "Given: Neo sin crédito y paquete pago a la Matrix | When: verificamos puedeSerEntregadoPor(neo) | Then: debería retornar false" {
+        neo.agotarCredito()
+        paquete.destino(lamatrix)
+        paquete.registrarPago()
+        assert.notThat(paquete.puedeSerEntregadoPor(neo))
+    }
+}
+
+describe "Paquete | Verificar restricción de pago" {
+    test "Given: Roberto en bicicleta y paquete sin pagar al puente | When: verificamos puedeSerEntregadoPor(roberto) | Then: debería retornar false" {
+        paquete.destino(puentedebrooklyn)
+        paquete.rechazarPago()
+        roberto.vehiculo(bicicleta)
+        assert.notThat(paquete.puedeSerEntregadoPor(roberto))
+    }
+}
+
+describe "Paquetito | Verificar que es gratis" {
+    test "Given: Paquetito | When: consultamos precio() | Then: debería retornar 0" {
+        assert.equals(0, paquetito.precio())
+    }
+}
+
+describe "Paquetito | Verificar que cualquier mensajero puede llevarlo" {
+    test "Given: Roberto sin poder llamar | When: consultamos paquetito.puedeSerEntregadoPor(roberto) | Then: debería retornar true" {
+        assert.that(paquetito.puedeSerEntregadoPor(roberto))
+    }
+}
+
+describe "Paquetonviajero | Verificar precio con múltiples destinos" {
+    test "Given: Paquetonviajero con 2 destinos distintos | When: consultamos precio() | Then: debería retornar 200" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.agregarDestino(puentedebrooklyn)
+        assert.equals(200, paquetonviajero.precio())
+    }
+}
+
+describe "Paquetonviajero | Verificar pago parcial no permite envío" {
+    test "Given: Paquetonviajero con 2 destinos ($200) y pago de $100, Chuck puede pasar | When: consultamos puedeSerEntregadoPor(chucknorris) | Then: debería retornar false" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(puentedebrooklyn)
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.registrarPago(100)
+        assert.notThat(paquetonviajero.puedeSerEntregadoPor(chucknorris))
+    }
+}
+
+describe "Paquetonviajero | Verificar que mensajero debe pasar por todos los destinos" {
+    test "Given: Paquetonviajero con Matrix y Puente, totalmente pago, Roberto en bici | When: consultamos puedeSerEntregadoPor(roberto) | Then: debería retornar false" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.agregarDestino(puentedebrooklyn)
+        paquetonviajero.registrarPago(200)
+        roberto.vehiculo(bicicleta)
+        assert.notThat(paquetonviajero.puedeSerEntregadoPor(roberto))
+    }
+}
+
+describe "Paquetonviajero | Verificar entrega exitosa con todos los requisitos" {
+    test "Given: Paquetonviajero con 1 destino Matrix, totalmente pago, Chuck | When: consultamos puedeSerEntregadoPor(chucknorris) | Then: debería retornar true" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.registrarPago(100)
+        assert.that(paquetonviajero.puedeSerEntregadoPor(chucknorris))
+    }
+}
+
+describe "Paquete | Verificar método precio" {
+    test "Given: Paquete | When: consultamos precio() | Then: debería retornar 50" {
+        assert.equals(50, paquete.precio())
+    }
+}
+
+describe "Paquete | Verificar método estaPago cuando está pago" {
+    test "Given: Paquete con pago registrado | When: consultamos estaPago() | Then: debería retornar true" {
+        paquete.registrarPago()
+        
+        assert.that(paquete.estaPago())
+    }
+}
+
+describe "Paquete | Verificar método estaPago cuando no está pago" {
+    test "Given: Paquete sin pago | When: consultamos estaPago() | Then: debería retornar false" {
+        paquete.rechazarPago()
+        
+        assert.that(!paquete.estaPago())
+    }
+}
+
+describe "Paquetito | Verificar método estaPago" {
+    test "Given: Paquetito | When: consultamos estaPago() | Then: debería retornar true" {
+        assert.that(paquetito.estaPago())
+    }
+}
+
+describe "Paquetonviajero | Verificar método estaPago cuando está totalmente pago" {
+    test "Given: Paquetonviajero con 1 destino y pago completo | When: consultamos estaPago() | Then: debería retornar true" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.registrarPago(100)
+        
+        assert.that(paquetonviajero.estaPago())
+    }
+}
+
+describe "Paquetonviajero | Verificar método estaPago cuando no está totalmente pago" {
+    test "Given: Paquetonviajero con 2 destinos y pago parcial | When: consultamos estaPago() | Then: debería retornar false" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.agregarDestino(puentedebrooklyn)
+        paquetonviajero.registrarPago(100)
+        
+        assert.that(!paquetonviajero.estaPago())
+    }
+}
+
+describe "Paquetonviajero | Verificar método quitarDestino" {
+    test "Given: Paquetonviajero con 2 destinos | When: quitamos un destino | Then: precio() debería retornar 100" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.agregarDestino(puentedebrooklyn)
+        paquetonviajero.quitarDestino(lamatrix)
+        
+        assert.equals(100, paquetonviajero.precio())
+    }
+}
+
+describe "Paquetonviajero | Verificar pago con límite de precio" {
+    test "Given: Paquetonviajero con 1 destino ($100) | When: registramos pago de $200 | Then: estaPago() debería retornar true" {
+        paquetonviajero.limpiarDestinos()
+        paquetonviajero.limpiarPago()
+        paquetonviajero.agregarDestino(lamatrix)
+        paquetonviajero.registrarPago(200)
+        
+        assert.that(paquetonviajero.estaPago())
+    }
+}

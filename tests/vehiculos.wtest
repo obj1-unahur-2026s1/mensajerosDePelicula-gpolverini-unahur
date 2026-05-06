@@ -1,0 +1,36 @@
+import src.vehiculos.*
+
+describe "Bicicleta | Verificar peso" {
+    test "Given: Bicicleta | When: consultamos peso() | Then: debería retornar 5" {
+        assert.equals(5, bicicleta.peso())
+    }
+}
+
+describe "Camion | Verificar peso con 1 acoplado" {
+    test "Given: Camión con 1 acoplado | When: consultamos peso() | Then: debería retornar 500" {
+        camion.cantidadDeAcoplados(1)
+        assert.equals(500, camion.peso())
+    }
+}
+
+describe "Camion | Verificar peso con 2 acoplados" {
+    test "Given: Camión con 2 acoplados | When: consultamos peso() | Then: debería retornar 1000" {
+        camion.cantidadDeAcoplados(2)
+        assert.equals(1000, camion.peso())
+    }
+}
+
+describe "Camion | Verificar peso con 3 acoplados" {
+    test "Given: Camión con 3 acoplados | When: consultamos peso() | Then: debería retornar 1500" {
+        camion.cantidadDeAcoplados(3)
+        assert.equals(1500, camion.peso())
+    }
+}
+
+describe "Camion | Verificar cambio de cantidad de acoplados" {
+    test "Given: Camión con 1 acoplado | When: cambiamos a 4 acoplados | Then: peso() debería retornar 2000" {
+        camion.cantidadDeAcoplados(1)
+        camion.cantidadDeAcoplados(4)
+        assert.equals(2000, camion.peso())
+    }
+}

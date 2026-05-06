@@ -1,0 +1,80 @@
+import src.mensajeros.*
+import src.vehiculos.*
+
+describe "Roberto | Verificar peso total en bicicleta" {
+    test "Given: Roberto en bicicleta | When: consultamos peso() | Then: debería retornar 95" {
+        roberto.vehiculo(bicicleta)
+        assert.equals(95, roberto.peso())
+    }
+}
+
+describe "Roberto | Verificar peso total en camión con 1 acoplado" {
+    test "Given: Roberto en camión con 1 acoplado | When: consultamos peso() | Then: debería retornar 590" {
+        roberto.vehiculo(camion)
+        camion.cantidadDeAcoplados(1)
+        assert.equals(590, roberto.peso())
+    }
+}
+
+describe "Roberto | Verificar peso total en camión con 2 acoplados" {
+    test "Given: Roberto en camión con 2 acoplados | When: consultamos peso() | Then: debería retornar 1090" {
+        roberto.vehiculo(camion)
+        camion.cantidadDeAcoplados(2)
+        assert.equals(1090, roberto.peso())
+    }
+}
+
+describe "Roberto | Verificar que no puede llamar" {
+    test "Given: Roberto | When: consultamos puedeLlamar() | Then: debería retornar false" {
+        assert.that(!roberto.puedeLlamar())
+    }
+}
+
+describe "Roberto | Verificar cambio de vehículo" {
+    test "Given: Roberto en camión | When: cambiamos a bicicleta | Then: peso() debería retornar 95" {
+        roberto.vehiculo(camion)
+        roberto.vehiculo(bicicleta)
+        
+        assert.equals(95, roberto.peso())
+    }
+}
+
+describe "Chucknorris | Verificar peso total" {
+    test "Given: Chuck Norris | When: consultamos peso() | Then: debería retornar 80" {
+        assert.equals(80, chucknorris.peso())
+    }
+}
+
+describe "Chucknorris | Verificar que puede llamar" {
+    test "Given: Chuck Norris | When: consultamos puedeLlamar() | Then: debería retornar true" {
+        assert.that(chucknorris.puedeLlamar())
+    }
+}
+
+describe "Neo | Verificar peso total" {
+    test "Given: Neo | When: consultamos peso() | Then: debería retornar 0" {
+        assert.equals(0, neo.peso())
+    }
+}
+
+describe "Neo | Verificar que puede llamar con crédito" {
+    test "Given: Neo con crédito | When: consultamos puedeLlamar() | Then: debería retornar true" {
+        neo.cargarCredito()
+        assert.that(neo.puedeLlamar())
+    }
+}
+
+describe "Neo | Verificar que no puede llamar sin crédito" {
+    test "Given: Neo sin crédito | When: consultamos puedeLlamar() | Then: debería retornar false" {
+        neo.agotarCredito()
+        assert.that(!neo.puedeLlamar())
+    }
+}
+
+describe "Neo | Verificar cambio de estado de crédito" {
+    test "Given: Neo sin crédito | When: ejecutamos cargarCredito() | Then: puedeLlamar() debería retornar true" {
+        neo.agotarCredito()
+        neo.cargarCredito()
+        assert.that(neo.puedeLlamar())
+    }
+}
